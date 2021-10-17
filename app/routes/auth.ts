@@ -1,18 +1,19 @@
 import * as bcrypt from 'bcrypt';
+import addDays from 'date-fns/addDays';
 import * as dotenv from 'dotenv';
 import { NextFunction, Request, Response, Router } from 'express';
 import { createToken } from '../lib/token';
-import { authMiddleware } from '../middleware/auth';
-import { RefreshTokens } from '../models/db/refreshTokens';
-import { Role } from '../models/db/role';
-import { User } from '../models/db/user';
+import authMiddleware from '../middleware/auth';
+import RefreshTokens from '../models/db/refreshTokens';
+import Role from '../models/db/role';
+import User from '../models/db/user';
 import { TokenInterface } from '../models/domain/token';
 import { UserInterface } from '../models/domain/user';
 
 dotenv.config();
 
-const refreshTokenExpiration: string = process.env
-  .APP_REFRESH_TOKEN_EXP as string;
+const refreshTokenExpiration: number = process.env
+  .APP_REFRESH_TOKEN_EXP_DAYS as unknown as number;
 
 const auth = Router();
 
@@ -56,8 +57,7 @@ auth.post(
 
       const refreshTokenExpiredAt: Date = new Date();
       refreshTokenExpiredAt.setSeconds(
-        refreshTokenExpiredAt.getSeconds() +
-          parseInt(refreshTokenExpiration, 10),
+        refreshTokenExpiredAt.getSeconds() + refreshTokenExpiration,
       );
 
       // save refreshtoken
@@ -87,12 +87,16 @@ auth.post('/login', async (req: Request, res: Response, next: NextFunction) => {
       foundUser.password &&
       (await bcrypt.compare(password, foundUser.password))
     ) {
+      // delete other refreshToken
+      RefreshTokens.destroy({
+        where: { userId: foundUser.id },
+      });
+
       const token: TokenInterface = createToken(foundUser.id!);
 
-      const refreshTokenExpiredAt: Date = new Date();
-      refreshTokenExpiredAt.setSeconds(
-        refreshTokenExpiredAt.getSeconds() +
-          parseInt(refreshTokenExpiration, 10),
+      const refreshTokenExpiredAt: Date = addDays(
+        new Date(),
+        refreshTokenExpiration,
       );
 
       RefreshTokens.create({
@@ -110,20 +114,16 @@ auth.post('/login', async (req: Request, res: Response, next: NextFunction) => {
   }
 });
 
-auth.post(
-  '/logout',
-  authMiddleware,
-  (req: Request, res: Response, next: NextFunction) => {
-    try {
-      RefreshTokens.destroy({
-        where: { userId: res.locals.jwtPayload.userId },
-      });
+auth.post('/logout', authMiddleware, (_, res: Response, next: NextFunction) => {
+  try {
+    RefreshTokens.destroy({
+      where: { userId: res.locals.jwtPayload.userId },
+    });
 
-      res.json();
-    } catch (e) {
-      next(e);
-    }
-  },
-);
+    res.json();
+  } catch (e) {
+    next(e);
+  }
+});
 
 export default auth;

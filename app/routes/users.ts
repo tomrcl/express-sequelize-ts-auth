@@ -6,7 +6,7 @@ import { UserInterface } from '../models/domain/user';
 
 const users = Router();
 
-users.get('/', async (req: Request, res: Response, next: NextFunction) => {
+users.get('/', async (_, res: Response, next: NextFunction) => {
   try {
     res.json(
       ((await User.findAll({ include: [Role] })) as UserInterface[]).map(

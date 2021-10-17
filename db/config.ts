@@ -1,9 +1,9 @@
 import * as dotenv from 'dotenv';
 import { Sequelize } from 'sequelize-typescript';
 import { Dialect } from 'sequelize/types';
-import { RefreshTokens } from '../app/models/db/refreshTokens';
-import { Role } from '../app/models/db/role';
-import { User } from '../app/models/db/user';
+import RefreshTokens from '../app/models/db/refreshTokens';
+import Role from '../app/models/db/role';
+import User from '../app/models/db/user';
 
 dotenv.config();
 

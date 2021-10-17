@@ -37,7 +37,7 @@ export function createToken(userId: number): TokenInterface {
 export function decodeToken(token: string): JwtPayload {
   try {
     return jwt.decode(token) as JwtPayload;
-  } catch (e) {
+  } catch (e: any) {
     throw new Error(e);
   }
 }
@@ -45,7 +45,7 @@ export function decodeToken(token: string): JwtPayload {
 export function verifyToken(token: string): TokenDataInterface {
   try {
     return jwt.verify(token, accessTokenSecret) as TokenDataInterface;
-  } catch (e) {
+  } catch (e: any) {
     throw new Error(e);
   }
 }

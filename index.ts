@@ -1,12 +1,12 @@
 import * as bcrypt from 'bcrypt';
 import cors, { CorsOptions } from 'cors';
 import * as dotenv from 'dotenv';
-import express from 'express';
-import { authMiddleware } from './app/middleware/auth';
-import { Role } from './app/models/db/role';
-import { User } from './app/models/db/user';
-import { auth } from './app/routes/auth';
-import { users } from './app/routes/users';
+import express, { Response } from 'express';
+import authMiddleware from './app/middleware/auth';
+import Role from './app/models/db/role';
+import User from './app/models/db/user';
+import auth from './app/routes/auth';
+import users from './app/routes/users';
 import sequelize from './db/config';
 
 dotenv.config();
@@ -37,11 +37,11 @@ app.use(express.json());
 // app.use(express.urlencoded({ extended: true }));
 
 // simple route
-app.get('/', (_, res) => {
+app.get('/', (_, res: Response) => {
   res.json({ message: 'Welcome to backend' });
 });
 
-app.post('/db-sync', (_, res) => {
+app.post('/db-sync', (_, res: Response) => {
   sequelize.sync({ force: true }).then(async () => {
     console.log('Drop and re-sync db.');
 
@@ -66,6 +66,7 @@ app.post('/db-sync', (_, res) => {
 
 app.use('/', auth);
 
+// others routes are protected
 app.use(authMiddleware);
 
 app.use('/users', users);
