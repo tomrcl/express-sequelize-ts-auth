@@ -12,6 +12,7 @@ import sequelize from './db/config';
 dotenv.config();
 
 const app = express();
+
 const PORT: number = process.env.APP_PORT as unknown as number;
 
 const corsOptions: CorsOptions = {
@@ -53,23 +54,24 @@ app.post('/db-sync', (_, res: Response) => {
         email: 'tom@rcl.com',
         password: await bcrypt.hash('test', 10),
         accountValidated: true,
-        emailValidated: true,
+        emailVerified: true,
         roleId: adminRole.id,
       },
       {
         include: [Role],
       },
     );
-    res.sendStatus(201);
+    res.sendStatus(200);
   });
 });
 
 app.use('/', auth);
 
-// others routes are protected
-app.use(authMiddleware);
+app.use('/users', authMiddleware, users);
 
-app.use('/users', users);
+app.use((_, res: Response) => {
+  res.status(404).send('Unable to find the requested resource!');
+});
 
 app.listen(PORT, () => {
   console.log(`⚡️[server]: Server is running at http://localhost:${PORT}`);

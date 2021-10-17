@@ -6,8 +6,9 @@ export interface UserInterface {
   password: string;
   name?: string;
   telephone?: string;
-  emailValidated?: boolean;
+  emailVerified?: boolean;
   accountValidated?: boolean;
+  active?: boolean;
   facebookId?: string;
   twitterId?: string;
   googleId?: string;

@@ -7,12 +7,12 @@ import User from '../app/models/db/user';
 
 dotenv.config();
 
-const dbName = process.env.DB_NAME as string;
-const dbUser = process.env.DB_USER as string;
-const dbHost = process.env.DB_HOST;
-const dbPort = Number.parseInt(process.env.DB_PORT as string, 10);
-const dbDriver = process.env.DB_DRIVER as Dialect;
-const dbPassword = process.env.DB_PASSWORD;
+const dbName: string = process.env.DB_NAME as string;
+const dbUser: string = process.env.DB_USER as string;
+const dbHost: string = process.env.DB_HOST as string;
+const dbPort: number = process.env.DB_PORT as unknown as number;
+const dbDriver: Dialect = process.env.DB_DRIVER as Dialect;
+const dbPassword: string = process.env.DB_PASSWORD as string;
 
 const sequelize = new Sequelize({
   database: dbName,

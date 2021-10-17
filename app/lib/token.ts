@@ -1,5 +1,6 @@
 import * as dotenv from 'dotenv';
 import jwt, { JwtPayload } from 'jsonwebtoken';
+import { RoleInterface } from '../models/domain/role';
 import { TokenDataInterface, TokenInterface } from '../models/domain/token';
 
 dotenv.config();
@@ -10,10 +11,17 @@ const accessTokenExpiration: string = process.env
 const refreshTokenSecret: string = process.env
   .APP_REFRESH_TOKEN_SECRET as string;
 
-export function createToken(userId: number): TokenInterface {
-  const accessToken: string = jwt.sign({ userId }, accessTokenSecret, {
-    expiresIn: accessTokenExpiration,
-  });
+export function createToken(
+  userId: number,
+  role: RoleInterface,
+): TokenInterface {
+  const accessToken: string = jwt.sign(
+    { userId, role: role.role },
+    accessTokenSecret,
+    {
+      expiresIn: accessTokenExpiration,
+    },
+  );
   const refreshToken: string = jwt.sign({ userId }, refreshTokenSecret);
 
   return {

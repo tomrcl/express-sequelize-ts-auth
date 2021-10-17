@@ -32,11 +32,15 @@ export default class User extends Model {
 
   @Default(false)
   @Column(DataType.BOOLEAN)
-  emailValidated: boolean = false;
+  emailVerified?: boolean;
 
   @Default(false)
   @Column(DataType.BOOLEAN)
-  accountValidated: boolean = false;
+  accountValidated?: boolean;
+
+  @Default(true)
+  @Column(DataType.BOOLEAN)
+  active?: boolean;
 
   @Column(DataType.TEXT)
   googleId?: string;

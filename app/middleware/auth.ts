@@ -5,6 +5,10 @@ const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
   // Get the jwt token from the head
   const token: string = req.headers.authorization as string;
 
+  if (!token) {
+    console.log('pas de token !');
+  }
+
   // Try to validate the token and get data
   try {
     const tokenWithoutBearer: string = token.startsWith('Bearer ')

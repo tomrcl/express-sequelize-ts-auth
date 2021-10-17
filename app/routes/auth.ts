@@ -7,6 +7,7 @@ import authMiddleware from '../middleware/auth';
 import RefreshTokens from '../models/db/refreshTokens';
 import Role from '../models/db/role';
 import User from '../models/db/user';
+import { RoleInterface } from '../models/domain/role';
 import { TokenInterface } from '../models/domain/token';
 import { UserInterface } from '../models/domain/user';
 
@@ -16,6 +17,25 @@ const refreshTokenExpiration: number = process.env
   .APP_REFRESH_TOKEN_EXP_DAYS as unknown as number;
 
 const auth = Router();
+
+/**
+ * calculate the expiration date of refreshToken and save it
+ *
+ * @param userId
+ * @param token
+ */
+const saveRefreshToken = (userId: number, token: string): void => {
+  const refreshTokenExpiredAt: Date = addDays(
+    new Date(),
+    refreshTokenExpiration,
+  );
+
+  RefreshTokens.create({
+    userId,
+    token,
+    expiredAt: refreshTokenExpiredAt,
+  });
+};
 
 auth.post(
   '/register',
@@ -53,19 +73,12 @@ auth.post(
       );
 
       // create token
-      const token: TokenInterface = createToken(user.id);
-
-      const refreshTokenExpiredAt: Date = new Date();
-      refreshTokenExpiredAt.setSeconds(
-        refreshTokenExpiredAt.getSeconds() + refreshTokenExpiration,
+      const token: TokenInterface = createToken(
+        user.id,
+        userRole as RoleInterface,
       );
 
-      // save refreshtoken
-      RefreshTokens.create({
-        userId: user.id,
-        token: token.refreshToken,
-        expiredAt: refreshTokenExpiredAt,
-      });
+      saveRefreshToken(user.id, token.refreshToken);
 
       // return token
       res.status(201).json(token);
@@ -81,10 +94,12 @@ auth.post('/login', async (req: Request, res: Response, next: NextFunction) => {
 
     const foundUser: UserInterface | null = (await User.findOne({
       where: { email },
+      include: [Role],
     })) as UserInterface;
     if (
       foundUser &&
       foundUser.password &&
+      foundUser.id &&
       (await bcrypt.compare(password, foundUser.password))
     ) {
       // delete other refreshToken
@@ -92,18 +107,9 @@ auth.post('/login', async (req: Request, res: Response, next: NextFunction) => {
         where: { userId: foundUser.id },
       });
 
-      const token: TokenInterface = createToken(foundUser.id!);
+      const token: TokenInterface = createToken(foundUser.id, foundUser.role);
 
-      const refreshTokenExpiredAt: Date = addDays(
-        new Date(),
-        refreshTokenExpiration,
-      );
-
-      RefreshTokens.create({
-        userId: foundUser.id,
-        token: token.refreshToken,
-        expiredAt: refreshTokenExpiredAt,
-      });
+      saveRefreshToken(foundUser.id, token.refreshToken);
 
       res.json(token);
     } else {
