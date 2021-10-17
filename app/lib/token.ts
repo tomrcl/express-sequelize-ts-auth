@@ -11,10 +11,10 @@ const accessTokenExpiration: string = process.env
 const refreshTokenSecret: string = process.env
   .APP_REFRESH_TOKEN_SECRET as string;
 
-export function createToken(
+export const createToken = (
   userId: number,
   role: RoleInterface,
-): TokenInterface {
+): TokenInterface => {
   const accessToken: string = jwt.sign(
     { userId, role: role.role },
     accessTokenSecret,
@@ -28,7 +28,7 @@ export function createToken(
     accessToken,
     refreshToken,
   };
-}
+};
 
 // export function refreshToken(userId: number): TokenInterface {
 //   const accessToken: string = jwt.sign({ userId }, accessTokenSecret, {
@@ -42,18 +42,18 @@ export function createToken(
 //   };
 // }
 
-export function decodeToken(token: string): JwtPayload {
+export const decodeToken = (token: string): JwtPayload => {
   try {
     return jwt.decode(token) as JwtPayload;
   } catch (e: any) {
     throw new Error(e);
   }
-}
+};
 
-export function verifyToken(token: string): TokenDataInterface {
+export const verifyToken = (token: string): TokenDataInterface => {
   try {
     return jwt.verify(token, accessTokenSecret) as TokenDataInterface;
   } catch (e: any) {
     throw new Error(e);
   }
-}
+};
