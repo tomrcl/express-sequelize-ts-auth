@@ -1,0 +1,19 @@
+# express-sequelize-ts-auth
+
+`npm i`
+
+## Exemple .env file
+
+DB_HOST=localhost
+DB_PORT=6543
+DB_USER=postgres
+DB_PASSWORD=admin
+DB_NAME=OMACAP
+DB_DRIVER=postgres
+
+APP_PORT=3333
+
+APP_ACCESS_TOKEN_SECRET=azerty123456
+APP_ACCESS_TOKEN_EXP=20m
+APP_REFRESH_TOKEN_SECRET=REazerty123456
+APP_REFRESH_TOKEN_EXP=1d
