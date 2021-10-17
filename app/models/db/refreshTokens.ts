@@ -6,11 +6,11 @@ import {
   Model,
   PrimaryKey,
   Table,
-} from "sequelize-typescript";
-import { User } from "./user";
+} from 'sequelize-typescript';
+import User from './user'; // eslint-disable-line import/no-cycle
 
 @Table
-export class RefreshTokens extends Model {
+export default class RefreshTokens extends Model {
   @PrimaryKey
   @Column(DataType.STRING)
   token!: string;

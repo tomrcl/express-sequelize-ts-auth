@@ -9,12 +9,12 @@ import {
   Model,
   Table,
   Unique,
-} from "sequelize-typescript";
-import { RefreshTokens } from "./refreshTokens";
-import { Role } from "./role";
+} from 'sequelize-typescript';
+import RefreshTokens from './refreshTokens'; // eslint-disable-line import/no-cycle
+import Role from './role'; // eslint-disable-line import/no-cycle
 
 @Table
-export class User extends Model {
+export default class User extends Model {
   @AllowNull(false)
   @Unique(true)
   @Column(DataType.TEXT)

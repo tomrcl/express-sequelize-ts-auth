@@ -5,14 +5,14 @@ import {
   HasMany,
   Model,
   Table,
-} from "sequelize-typescript";
-import { User } from "./user";
+} from 'sequelize-typescript';
+import User from './user'; // eslint-disable-line import/no-cycle
 
 @Table
-export class Role extends Model {
-  @Default("user")
+export default class Role extends Model {
+  @Default('user')
   @Column(DataType.STRING)
-  role?: "user" | "admin";
+  role?: 'user' | 'admin';
 
   @HasMany(() => User)
   users?: User[];

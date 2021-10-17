@@ -1,17 +1,13 @@
-import { Request, Response, NextFunction } from "express";
-import { decodeToken, verifyToken } from "../lib/token";
+import { Request, Response, NextFunction } from 'express';
+import { decodeToken, verifyToken } from '../lib/token';
 
-export const authMiddleware = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  //Get the jwt token from the head
+const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
+  // Get the jwt token from the head
   const token: string = req.headers.authorization as string;
 
-  //Try to validate the token and get data
+  // Try to validate the token and get data
   try {
-    const tokenWithoutBearer: string = token.startsWith("Bearer ")
+    const tokenWithoutBearer: string = token.startsWith('Bearer ')
       ? token.substring(7)
       : token;
 
@@ -24,6 +20,8 @@ export const authMiddleware = (
     return;
   }
 
-  //Call the next middleware or controller
+  // Call the next middleware or controller
   next();
 };
+
+export default authMiddleware;

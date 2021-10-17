@@ -1,6 +1,6 @@
-import * as dotenv from "dotenv";
-import jwt, { JwtPayload, VerifyErrors } from "jsonwebtoken";
-import { TokenDataInterface, TokenInterface } from "../models/domain/token";
+import * as dotenv from 'dotenv';
+import jwt, { JwtPayload } from 'jsonwebtoken';
+import { TokenDataInterface, TokenInterface } from '../models/domain/token';
 
 dotenv.config();
 
@@ -22,22 +22,22 @@ export function createToken(userId: number): TokenInterface {
   };
 }
 
-export function refreshToken(userId: number): TokenInterface {
-  const accessToken: string = jwt.sign({ userId }, accessTokenSecret, {
-    expiresIn: accessTokenExpiration,
-  });
-  const refreshToken: string = jwt.sign({ userId }, refreshTokenSecret);
+// export function refreshToken(userId: number): TokenInterface {
+//   const accessToken: string = jwt.sign({ userId }, accessTokenSecret, {
+//     expiresIn: accessTokenExpiration,
+//   });
+//   const refreshToken: string = jwt.sign({ userId }, refreshTokenSecret);
 
-  return {
-    accessToken,
-    refreshToken,
-  };
-}
+//   return {
+//     accessToken,
+//     refreshToken,
+//   };
+// }
 
 export function decodeToken(token: string): JwtPayload {
   try {
     return jwt.decode(token) as JwtPayload;
-  } catch (e: VerifyErrors | any) {
+  } catch (e) {
     throw new Error(e);
   }
 }
@@ -45,7 +45,7 @@ export function decodeToken(token: string): JwtPayload {
 export function verifyToken(token: string): TokenDataInterface {
   try {
     return jwt.verify(token, accessTokenSecret) as TokenDataInterface;
-  } catch (e: VerifyErrors | any) {
+  } catch (e) {
     throw new Error(e);
   }
 }

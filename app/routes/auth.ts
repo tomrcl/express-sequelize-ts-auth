@@ -1,40 +1,40 @@
-import bcrypt from "bcrypt";
-import * as dotenv from "dotenv";
-import { NextFunction, Request, Response, Router } from "express";
-import { createToken } from "../lib/token";
-import { authMiddleware } from "../middleware/auth";
-import { RefreshTokens } from "../models/db/refreshTokens";
-import { Role } from "../models/db/role";
-import { User } from "../models/db/user";
-import { TokenInterface } from "../models/domain/token";
-import { UserInterface } from "../models/domain/user";
+import * as bcrypt from 'bcrypt';
+import * as dotenv from 'dotenv';
+import { NextFunction, Request, Response, Router } from 'express';
+import { createToken } from '../lib/token';
+import { authMiddleware } from '../middleware/auth';
+import { RefreshTokens } from '../models/db/refreshTokens';
+import { Role } from '../models/db/role';
+import { User } from '../models/db/user';
+import { TokenInterface } from '../models/domain/token';
+import { UserInterface } from '../models/domain/user';
 
 dotenv.config();
 
 const refreshTokenExpiration: string = process.env
   .APP_REFRESH_TOKEN_EXP as string;
 
-export const auth = Router();
+const auth = Router();
 
 auth.post(
-  "/register",
+  '/register',
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { email, password, name, telephone } = req.body as UserInterface;
 
       // check email non already exist
       const existingUser: User | null = await User.findOne({
-        where: { email: email },
+        where: { email },
       });
 
       if (existingUser) {
-        res.status(400).json({ message: "email already exists" });
+        res.status(400).json({ message: 'email already exists' });
         return;
       }
 
       // get user roleId
       const userRole: Role = (await Role.findOne({
-        where: { role: "user" },
+        where: { role: 'user' },
       })) as Role;
 
       // create user
@@ -48,7 +48,7 @@ auth.post(
         },
         {
           include: [Role],
-        }
+        },
       );
 
       // create token
@@ -56,7 +56,8 @@ auth.post(
 
       const refreshTokenExpiredAt: Date = new Date();
       refreshTokenExpiredAt.setSeconds(
-        refreshTokenExpiredAt.getSeconds() + parseInt(refreshTokenExpiration)
+        refreshTokenExpiredAt.getSeconds() +
+          parseInt(refreshTokenExpiration, 10),
       );
 
       // save refreshtoken
@@ -71,10 +72,10 @@ auth.post(
     } catch (e) {
       next(e);
     }
-  }
+  },
 );
 
-auth.post("/login", async (req: Request, res: Response, next: NextFunction) => {
+auth.post('/login', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { email, password } = req.body as UserInterface;
 
@@ -90,7 +91,8 @@ auth.post("/login", async (req: Request, res: Response, next: NextFunction) => {
 
       const refreshTokenExpiredAt: Date = new Date();
       refreshTokenExpiredAt.setSeconds(
-        refreshTokenExpiredAt.getSeconds() + parseInt(refreshTokenExpiration)
+        refreshTokenExpiredAt.getSeconds() +
+          parseInt(refreshTokenExpiration, 10),
       );
 
       RefreshTokens.create({
@@ -109,7 +111,7 @@ auth.post("/login", async (req: Request, res: Response, next: NextFunction) => {
 });
 
 auth.post(
-  "/logout",
+  '/logout',
   authMiddleware,
   (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -121,5 +123,7 @@ auth.post(
     } catch (e) {
       next(e);
     }
-  }
+  },
 );
+
+export default auth;
