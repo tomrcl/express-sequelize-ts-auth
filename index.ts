@@ -16,7 +16,7 @@ const app = express();
 const PORT: number = process.env.APP_PORT as unknown as number;
 
 const corsOptions: CorsOptions = {
-  origin: `http://localhost:${PORT}`,
+  origin: `http://localhost:3000`,
 };
 
 app.use(cors(corsOptions));

@@ -2,6 +2,7 @@ import * as bcrypt from 'bcrypt';
 import addDays from 'date-fns/addDays';
 import * as dotenv from 'dotenv';
 import { NextFunction, Request, Response, Router } from 'express';
+import { sendMail } from '../lib/mailer';
 import { createToken } from '../lib/token';
 import authMiddleware from '../middleware/auth';
 import RefreshTokens from '../models/db/refreshTokens';
@@ -71,6 +72,8 @@ auth.post(
           include: [Role],
         },
       );
+
+      sendMail(email, name);
 
       // create token
       const token: TokenInterface = createToken(
