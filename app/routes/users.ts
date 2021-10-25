@@ -35,12 +35,62 @@ users.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
   }
 
   try {
-    // const user = await User.findByPk(req.params["id"]);
     const user: UserInterface = (await User.findOne({
       where: { id: req.params.id },
       include: [Role],
     })) as UserInterface;
     res.json(UserOut.toUserOut(user));
+  } catch (e) {
+    next(e);
+  }
+});
+
+users.patch('/:id', async (req: Request, res: Response, next: NextFunction) => {
+  // admin can patch all data
+  // user can patch his data
+  if (
+    res.locals.jwtPayload.userId !== parseInt(req.params.id, 10) &&
+    res.locals.jwtPayload.role !== 'admin'
+  ) {
+    res.sendStatus(403);
+    return;
+  }
+
+  try {
+    const userToUpdate: User = (await User.findOne({
+      where: { id: req.params.id },
+      include: [Role],
+    })) as User;
+
+    const user = req.body.user;
+    if (user.email) {
+      userToUpdate.email = user.email;
+    }
+    if (user.password) {
+      userToUpdate.password = user.password;
+    }
+    if (user.name) {
+      userToUpdate.name = user.name;
+    }
+    if (user.telephone) {
+      userToUpdate.telephone = user.telephone;
+    }
+    if (user.emailVerified) {
+      userToUpdate.emailVerified = user.emailVerified;
+    }
+    if (user.accountValidated) {
+      userToUpdate.accountValidated = user.accountValidated;
+    }
+    if (user.active) {
+      userToUpdate.active = user.active;
+    }
+    if (user.role) {
+      userToUpdate.role = user.role;
+    }
+
+    const userUpdated: UserInterface = (await user.save()) as UserInterface;
+
+    res.json(UserOut.toUserOut(userUpdated));
   } catch (e) {
     next(e);
   }

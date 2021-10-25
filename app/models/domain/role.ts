@@ -1,6 +1,6 @@
-import User from '../db/user';
+import { UserInterface } from './user';
 
 export interface RoleInterface {
   role: 'user' | 'admin';
-  users: User[];
+  users: UserInterface[];
 }

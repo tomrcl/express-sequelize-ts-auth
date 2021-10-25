@@ -37,7 +37,7 @@ const registerMessage = (
   };
 };
 
-export const sendMail = (email: string, name: string) => {
+export const sendMail = (email: string, name: string = '') => {
   transport.sendMail(
     registerMessage(email, name, 'http://www.qwant.fr'),
     (err: any, info: any) => {

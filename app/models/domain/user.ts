@@ -1,7 +1,7 @@
 import { RoleInterface } from './role';
 
 export interface UserInterface {
-  id?: number;
+  id: number;
   email: string;
   password: string;
   name?: string;
@@ -13,6 +13,16 @@ export interface UserInterface {
   twitterId?: string;
   googleId?: string;
   role: RoleInterface;
+}
+
+export interface UserPatchInterface {
+  email?: string;
+  password?: string;
+  name?: string;
+  telephone?: string;
+  emailVerified?: boolean;
+  accountValidated?: boolean;
+  active?: boolean;
 }
 
 export interface UserOutInterface {
